@@ -9,7 +9,7 @@ pipeline {
         REMOTE_USER    = 'ubuntu'
         DEPLOY_DIR     = '/var/www/html'
     }
-sudo chown -R ubuntu:ubuntu /var/www/html
+
     stages {
 
         stage('Clean Workspace') {
