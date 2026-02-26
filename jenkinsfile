@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         SERVER_IP      = '172.31.17.221'
-        SSH_CREDENTIAL = 'node-app-key'
+        SSH_CREDENTIAL = 'node-key-app'
         REPO_URL       = 'https://github.com/OmBhamare07/student-registration-using-jenkins-pipeline.git'
         BRANCH         = 'main'
         REMOTE_USER    = 'ubuntu'
