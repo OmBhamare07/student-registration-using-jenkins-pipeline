@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Page</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: #0a0a0f;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
+    }
+
+    /* Invisible glowing grid background */
+    .grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 40px);
+      grid-template-rows: repeat(auto-fill, 40px);
+      z-index: 0;
+    }
+
+    .cell {
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    .cell:hover {
+      background: rgba(0, 255, 255, 0.15);
+      box-shadow: 0 0 8px cyan;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      background: rgba(20, 20, 30, 0.9);
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.2);
+      width: 380px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+    }
+
+    h2 {
+      color: cyan;
+      margin-bottom: 20px;
+      text-shadow: 0 0 8px cyan;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      margin-bottom: 5px;
+      color: #bbb;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 8px;
+      background: #111;
+      color: #fff;
+      outline: none;
+      transition: box-shadow 0.3s;
+    }
+
+    input:focus {
+      box-shadow: 0 0 10px cyan;
+    }
+
+    input[type="submit"] {
+      background: cyan;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    input[type="submit"]:hover {
+      background: #00e6e6;
+      box-shadow: 0 0 15px cyan;
+    }
+
+    .signup-text {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #aaa;
+    }
+
+    .signup-text a {
+      color: cyan;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+
+    .signup-text a:hover {
+      color: #00ffff;
+    }
+  </style>
+</head>
+<body>
+  <div class="grid" id="grid"></div>
+
+  <div class="container">
+    <h2>Login</h2>
+    <form action="login.php" method="post" onsubmit="return validateLogin()">
+      <label>Email:</label>
+      <input type="email" name="email" required>
+
+      <label>Password:</label>
+      <input type="password" name="password" required>
+
+      <input type="submit" value="Login">
+
+      <div class="signup-text">
+        Don’t have an account? <a href="signup.html">SIGN UP</a>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    function validateLogin() {
+      const email = document.forms[0]["email"].value;
+      const password = document.forms[0]["password"].value;
+      if (email === "" || password === "") {
+        alert("Please fill in all required fields!");
+        return false;
+      }
+      return true;
+    }
+
+    // Generate glowing grid
+    const grid = document.getElementById('grid');
+    const cellCount = Math.ceil(window.innerWidth / 40) * Math.ceil(window.innerHeight / 40);
+    for (let i = 0; i < cellCount; i++) {
+      const cell = document.createElement('div');
+      cell.classList.add('cell');
+      grid.appendChild(cell);
+    }
+  </script>
+</body>
+</html>
