@@ -1,0 +1,102 @@
+pipeline {
+    agent any
+
+    environment {
+        SERVER_IP      = '172.31.17.221'
+        SSH_CREDENTIAL = 'node-app-key'
+        REPO_URL       = 'https://github.com/OmBhamare07/student-registration-using-jenkins-pipeline.git'
+        BRANCH         = 'main'
+        REMOTE_USER    = 'ubuntu'
+        DEPLOY_DIR     = '/var/www/html'
+    }
+
+    stages {
+
+        stage('Clean Workspace') {
+            steps {
+                deleteDir()
+            }
+        }
+
+        stage('Clone Repository') {
+            steps {
+                git branch: "${BRANCH}", url: "${REPO_URL}"
+            }
+        }
+
+        stage('Install Required Software on EC2') {
+            steps {
+                sshagent(credentials: ["${SSH_CREDENTIAL}"]) {
+                    sh """
+                    ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${SERVER_IP} '
+                        sudo apt update -y &&
+                        sudo apt install apache2 mysql-server php libapache2-mod-php php-mysql git -y &&
+                        sudo systemctl enable apache2 &&
+                        sudo systemctl enable mysql &&
+                        sudo systemctl start apache2 &&
+                        sudo systemctl start mysql
+                    '
+                    """
+                }
+            }
+        }
+
+        stage('Setup MySQL Database') {
+            steps {
+                sshagent(credentials: ["${SSH_CREDENTIAL}"]) {
+                    sh """
+                    ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${SERVER_IP} '
+                        sudo mysql -e "
+                        CREATE DATABASE IF NOT EXISTS studentdb;
+                        USE studentdb;
+                        CREATE TABLE IF NOT EXISTS users (
+                            id INT AUTO_INCREMENT PRIMARY KEY,
+                            name VARCHAR(100),
+                            email VARCHAR(100) UNIQUE,
+                            password VARCHAR(255),
+                            gender VARCHAR(10),
+                            comment TEXT
+                        );
+                        "
+                    '
+                    """
+                }
+            }
+        }
+
+        stage('Deploy Application') {
+            steps {
+                sshagent(credentials: ["${SSH_CREDENTIAL}"]) {
+                    sh """
+                    scp -o StrictHostKeyChecking=no -r * ${REMOTE_USER}@${SERVER_IP}:${DEPLOY_DIR}
+                    """
+                }
+            }
+        }
+
+        stage('Set Permissions') {
+            steps {
+                sshagent(credentials: ["${SSH_CREDENTIAL}"]) {
+                    sh """
+                    ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${SERVER_IP} '
+                        sudo chown -R www-data:www-data ${DEPLOY_DIR}
+                        sudo chmod -R 755 ${DEPLOY_DIR}
+                    '
+                    """
+                }
+            }
+        }
+
+        stage('Restart Apache') {
+            steps {
+                sshagent(credentials: ["${SSH_CREDENTIAL}"]) {
+                    sh """
+                    ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${SERVER_IP} '
+                        sudo systemctl restart apache2
+                    '
+                    """
+                }
+            }
+        }
+    }
+}
