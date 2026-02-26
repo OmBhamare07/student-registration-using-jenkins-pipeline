@@ -2,14 +2,14 @@ pipeline {
     agent any
 
     environment {
-        SERVER_IP      = '172.31.17.221'
+        SERVER_IP      = '172.31.2.79'
         SSH_CREDENTIAL = 'node-key-app'
         REPO_URL       = 'https://github.com/OmBhamare07/student-registration-using-jenkins-pipeline.git'
         BRANCH         = 'main'
         REMOTE_USER    = 'ubuntu'
         DEPLOY_DIR     = '/var/www/html'
     }
-
+sudo chown -R ubuntu:ubuntu /var/www/html
     stages {
 
         stage('Clean Workspace') {
